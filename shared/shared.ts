@@ -27,7 +27,6 @@ export namespace FormComponents {
         label: string;
     }
 
-
     interface Dropdown extends BaseQuestion {
         type: 'dropdown';
         options: DropdownOption[];
@@ -43,14 +42,14 @@ export namespace FormComponents {
 
     interface MatrixQuestion {
         type: 'matrix';
-        options: MatrixOption[];
+        options: MatrixOption[] | MatrixQuestion;
         selectedOptionId: number | null;
     }
 
     interface MatrixOption {
         id: number;
         label: string;
-        value: string;
+        value: string | MatrixQuestion | MatrixOption;
     }
 
     interface OpenQuestion extends BaseQuestion {
@@ -64,7 +63,7 @@ export namespace FormComponents {
     interface Survey {
         id: string;
         title: string;
-        questions: (OpenQuestion | Checkbox | RadioButton | Dropdown)[];
+        questions: (OpenQuestion | Checkbox | RadioButton | Dropdown | MatrixQuestion)[];
         isPublished: boolean;
     }
 

@@ -4,6 +4,75 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+
+// This prisma schema should guarantee confidentiality yet ensure:
+// 1) Maximum amount of metadata for further analysis
+// 2) Traceability through other means
+
+// On the other hand, although in this project there is no auth, therefore no distinction between users,
+//it would be useful for a real-life app to actually track who created what survey.
+
+// User -> Create a survey
+// User -> Answer a survey
+// User -> Modify a survey
+// User -> Decide whether that modification will delete the stored answers of a question that no longer exists
+// User -> Save a draft of a survey and continue later
+// User -> See saved drafts (they have a limit of 72 hours, or adjustable)
+// User -> See results and diverse formats of those results
+
+// User -> Create a survey
+  // Survey -> Questions
+  // Questions -> Questions | Answers
+
+// User -> Answer a survey
+// User -> Modify a survey
+// User -> Decide whether that modification will delete the stored answers of a question that no longer exists
+// User -> Save a draft of a survey and continue later
+// User -> See saved drafts (they have a limit of 72 hours, or adjustable)
+// User -> See results and diverse formats of those results
+
+
+// User to Survey relationships to consider:
+
+
+// User as creator (1:many)
+// User as respondent (many:many)
+// Need to track survey ownership vs responses
+
+
+// Survey to Question considerations:
+
+
+// Questions need position/order tracking
+// Version management for modifications
+// Handling nested questions (from your matrix design)
+// Parent-child relationships for nested structures
+
+
+// Question to Answer relationships:
+
+
+// One question can have multiple answers from different users
+// Need to maintain anonymity while preventing duplicate responses
+// Consider how to handle modified questions
+// Matrix answer storage strategy
+
+
+// Temporal aspects to consider:
+
+
+// Survey active/inactive periods
+// Answer submission timestamps
+// Question modification history
+// Draft expiration tracking
+
+
+// Integrity constraints:
+
+
+// What happens when a user is deleted?
+// How to handle survey deletion with existing responses
+// Question modification impact on existing answers
 generator client {
   provider = "prisma-client-js"
 }
