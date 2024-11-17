@@ -4,9 +4,11 @@ import MainLayout from "../../layouts/MainLayout";
 const SurveyEditor = () => {
   return (
     <>
-      <div>
-        <h1>Editor!</h1>
-      </div>
+      <MainLayout>
+        <div>
+          <h1>Editor!</h1>
+        </div>
+      </MainLayout>
     </>
   );
 };

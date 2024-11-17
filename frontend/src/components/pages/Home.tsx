@@ -4,9 +4,11 @@ import MainLayout from "../../layouts/MainLayout";
 const Home = () => {
   return (
     <>
-      <div>
-        <h1>Surveys!</h1>
-      </div>
+      <MainLayout>
+        <div>
+          <h1>Surveys!</h1>
+        </div>
+      </MainLayout>
     </>
   );
 };
