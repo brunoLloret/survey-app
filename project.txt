@@ -1,0 +1,104 @@
+Overview
+Your goal today is to build a simple full-stack application (that means frontend AND backend AND database).
+
+You will be using ExpressJS to serve static HTML forms and handle submissions, and you may use Claude / ChatGPT to ask questions, but NOT to copy code. You cannot use Cursor or Github Copilot or any form of AI code-writer. Type every character of code yourself -- don’t even copy from the docs. You will be surprised how much muscle memory matters.
+
+A survey app is exactly what it sounds like: an app to create surveys and collect anonymous survey results. It needs to:
+Create New Surveys
+Show all Past Surveys, with links to “survey results” and “take this survey” screens,
+Allow a user to take a survey, submit the survey, and see “success, thank you for submitting”.
+
+YOU DO NOT NEED AUTHENTICATION FOR THIS APP.
+
+A survey app covers a full stack application. Focus on getting the underlying functionality in place, and then clean up the UI/UX with Daisy/Tailwind. 
+Core Concepts
+CRUD
+Data Modelling
+ORMs
+HTML + CSS + Forms
+Features
+Your Survey App should have the following, built with simple HTML templates OR React, served via Express.
+
+NOTE: You may swap to React at any time; no need to wait until you’ve built the whole thing with HTML Templates. I recommend swapping to React if you feel too confused with HTML templates.
+
+4 Views
+
+List of Surveys
+
+Survey Creation
+
+Survey Submission + Success Screen
+Survey Results
+
+List of Existing Surveys
+
+Go to creation/submission/results
+
+Each survey should link to “take this survey” and “view results for this survey” pages
+
+Survey Creation
+
+Be able to add multiple survey blocks (questions)
+Be able to update a survey block
+Be able to delete a survey block
+Generate a link to take the survey
+Survey Submission
+Be able to respond (anonymously) to a survey (series of questions) and have your answer recorded
+All survey answers are freeform text responses
+
+Survey Results
+View a list of responses
+
+Bonus:
+Allow multiple survey block types (multiple choice, range, date)
+Aggregate results in the Survey Results View
+When a question is answered, minimize the survey block
+
+
+
+******
+
+1. Welcome page
+
+2. Existing surveys
+-> Take any survey
+    -> Answer questions
+        -> POST db surveyId -> questions[i]
+    -> Submit survey
+    
+    -> Options: See statistics / Go back to main / Go back to Surveys
+
+3. Survey Creator
+
+-> Create survey
+    -> Add title
+    -> Add multiple survey blocks (questions)
+    
+-> Create survey once blocks are done
+    -> Store it in db 
+    -> IsPublished true
+    -> Generate a link to take the survey
+    -> Options: Take the survey / go back to Create survey / Go back to main
+
+-> Edit a survey
+    -> Title?
+    -> Block? -> Display number/section and title of block/question Edit/delete
+-> Delete a survey
+    -> Delete all? Confirmation
+
+
+Steps:
+1. Generate Prisma Schema
+2. Generate fake data and seed the schema
+3. Hard-code Welcome page, Existing surveys, Create survey, Edit surveys.
+    Are they any reusable components?
+    Perhaps the type of blocks:
+        text
+        multiple choice
+        accordeon
+        check-box
+4. Generate front-end structure: links and pages
+5. First operation front-end / back-end: getAllSurveys
+5b. Clone the app for future variations: useContext, redux, etc
+6. Define where to handle the diverse states
+7. Define all the other actions with the backend, write service
