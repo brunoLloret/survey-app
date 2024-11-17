@@ -9,6 +9,9 @@ export default ({ mode }: ConfigEnv) => {
       "process.env.API_URL": JSON.stringify(env.API_URL),
     },
     plugins: [react()],
+    resolve: {
+      dedupe: ['react', 'react-dom']  // Add this to prevent duplicate React instances
+    },
     server: {
       proxy: {
         "/api": {
