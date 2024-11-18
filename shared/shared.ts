@@ -72,7 +72,7 @@ export interface SurveyResponse {
     id: string;
     surveyId: string;
     respondentId?: string;
-    submitteddAt: Date;
+    submittedAt: Date | null;
     answers: QuestionResponse[];
 }
 
