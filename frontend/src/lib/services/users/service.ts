@@ -1,18 +1,33 @@
-import axios from "axios";
-import { UserInputDto } from "./types";
+import axios from "axios"
 
-const baseUrl: string = "/api/users";
+const surveyAPI = () => {
+  const baseUrl = '/api/surveys'
 
-//...
-
-const example = async () => {
-  try {
-   
-  } catch (e) {
-   
+  // Could add shared error handling
+  const handleError = (error, method) => {
+    console.error(`Error in ${method}:`, error)
+    throw error  // or return a custom error object
   }
-};
 
-//...
+  return {
+    getAllSurveys: async () => {
+      try {
+        const response = await axios.get(baseUrl)
+        return response.data
+      } catch (error) {
+        return handleError(error, 'getAllSurveys')
+      }
+    },
 
-export default { example };
+    getSurveyById: async (id) => {
+      try {
+        const response = await axios.get(`${baseUrl}/${id}`)
+        return response.data
+      } catch (error) {
+        return handleError(error, 'getSurveyById')
+      }
+    }
+  }
+}
+
+export default surveyAPI

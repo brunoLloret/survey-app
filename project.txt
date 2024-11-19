@@ -61,26 +61,45 @@ When a question is answered, minimize the survey block
 1. Welcome page
 
 2. Existing surveys
+/surveys
+
+
 -> Take any survey
+/surveys/{surveyId}/
     -> Answer questions
-        -> POST db surveyId -> questions[i]
+        /surveys/{surveyId}/{questionId} -> Q: is it necessary to make the path of the question explicit? I don't think so
+        
     -> Submit survey
+        -> POST db surveyId -> questionId with SurveyResponse
     
-    -> Options: See statistics / Go back to main / Go back to Surveys
+    -> Options:
+    See statistics -> path: /surveys/{surveyId}/statistics element: <Statistics />
+    Go back to main -> path: /home element: <Home />
+    Go back to Surveys -> path: /surveys element <Surveys />
 
 3. Survey Creator
 
+-> Actions: add title (onChange, onSubmit), add Question, create Survey (assign id and send to db), publish Survey (isPublished: true), generate link 
+
+
 -> Create survey
-    -> Add title
-    -> Add multiple survey blocks (questions)
+-> We create and handle diverse states, then we create the survey 
+
+    -> Id is automatic
+    -> Add title (required)
+    -> Add multiple survey blocks (questions) (at least 1 required)
     
 -> Create survey once blocks are done
     -> Store it in db 
     -> IsPublished true
     -> Generate a link to take the survey
+        -> path: /surveys/{surveyId}/
     -> Options: Take the survey / go back to Create survey / Go back to main
 
 -> Edit a survey
+
+-> See all surveys by title. They can be organized by Id order, or title order.
+    -> Once you click on one, that survey is rendered.
     -> Title?
     -> Block? -> Display number/section and title of block/question Edit/delete
 -> Delete a survey
@@ -88,17 +107,11 @@ When a question is answered, minimize the survey block
 
 
 Steps:
-1. Generate Prisma Schema
-2. Generate fake data and seed the schema
-3. Hard-code Welcome page, Existing surveys, Create survey, Edit surveys.
-    Are they any reusable components?
-    Perhaps the type of blocks:
-        text
-        multiple choice
-        accordeon
-        check-box
-4. Generate front-end structure: links and pages
-5. First operation front-end / back-end: getAllSurveys
-5b. Clone the app for future variations: useContext, redux, etc
-6. Define where to handle the diverse states
-7. Define all the other actions with the backend, write service
+1> The basic routing, paths, layouts and pages have been defined.
+2> The types and interfaces have been defined.
+3> Basic components Footer, Header and NavBar have been hard-coded.
+
+To do:
+4> Write the FormComponents
+    -> FormComponents define the interface of all the possible parts of a Survey
+    -> Write Survey component
