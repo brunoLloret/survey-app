@@ -1,3 +1,5 @@
+//Here, create, update, delete surveys
+
 import React from "react";
 import MainLayout from "../../layouts/MainLayout";
 

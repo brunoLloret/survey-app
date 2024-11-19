@@ -41,7 +41,7 @@ app.get('/', (_: Request, res: Response) => {
 });
 
 // Survey routes
-app.get('/api/surveys', asyncHandler(async (_: Request, res: Response) => {
+app.get('/surveys', asyncHandler(async (_: Request, res: Response) => {
 	const surveys = await prisma.survey.findMany({
 		include: {
 			questions: {
@@ -54,7 +54,7 @@ app.get('/api/surveys', asyncHandler(async (_: Request, res: Response) => {
 	res.json(surveys);
 }));
 
-app.get('/api/surveys/:id', asyncHandler<SurveyParams>(async (req, res) => {
+app.get('/surveys/:id', asyncHandler<SurveyParams>(async (req, res) => {
 	const survey = await prisma.survey.findUnique({
 		where: { id: req.params.id },
 		include: {

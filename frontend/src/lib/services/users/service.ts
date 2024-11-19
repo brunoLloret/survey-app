@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const surveyAPI = () => {
-  const baseUrl = '/api/surveys'
+  const baseUrl = 'http://localhost:3001/surveys'
 
   // Could add shared error handling
   const handleError = (error, method) => {
@@ -10,6 +10,7 @@ const surveyAPI = () => {
   }
 
   return {
+
     getAllSurveys: async () => {
       try {
         const response = await axios.get(baseUrl)
