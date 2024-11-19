@@ -73,6 +73,8 @@
 // What happens when a user is deleted?
 // How to handle survey deletion with existing responses
 // Question modification impact on existing answers
+
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -82,17 +84,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// models
+enum QuestionType {
+  checkbox
+  radio
+  dropdown
+  open
+  matrix
+}
 
-// user
-model User {
-  // metadata
-  id                  String                @id @default(cuid())
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @default(now()) @updatedAt
-  // fields
-  email               String                @unique
+enum SurveyStatus {
+  draft
+  published
+  closed
+}
 
+enum SurveyResponseStatus {
+  complete
+  partial
+  invalid
+}
 
-  @@map("user")
+model Survey {
+  id        String      @id @default(uuid())
+  title     String
+  status    SurveyStatus @default(draft)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  questions Question[]
+  responses SurveyResponse[]
+
+  @@map("survey")
+}
+
+model Question {
+  id          String       @id @default(uuid())
+  label       String
+  required    Boolean      @default(false)
+  type        QuestionType
+  survey      Survey       @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  surveyId    String
+  orderIndex  Int         
+  question    String?     
+  placeholder String?     
+  maxLength   Int?        
+  checked     Boolean?    
+  options     Option[]    
+  responses   QuestionResponse[]
+
+  @@map("question")
+  @@index([surveyId])
+}
+
+model Option {
+  id          String    @id @default(uuid())
+  label       String
+  value       String?
+  question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId  String
+  parentId    String?   
+  parent      Option?   @relation("NestedOptions", fields: [parentId], references: [id])
+  children    Option[]  @relation("NestedOptions")
+  responses   QuestionResponse[] @relation("OptionResponses")
+
+  @@map("option")
+  @@index([questionId])
+}
+
+model SurveyResponse {
+  id            String               @id @default(uuid())
+  survey        Survey               @relation(fields: [surveyId], references: [id])
+  surveyId      String
+  status        SurveyResponseStatus @default(partial)
+  submittedAt   DateTime?
+  answers       QuestionResponse[]
+
+  @@map("survey_response")
+  @@index([surveyId])
+}
+
+model QuestionResponse {
+  id               String          @id @default(uuid())
+  surveyResponse   SurveyResponse  @relation(fields: [surveyResponseId], references: [id], onDelete: Cascade)
+  surveyResponseId String
+  question         Question        @relation(fields: [questionId], references: [id])
+  questionId       String
+  textValue       String?         
+  booleanValue    Boolean?        
+  selectedOptions  Option[]       @relation("OptionResponses")
+
+  @@map("question_response")
+  @@index([questionId])
+  @@index([surveyResponseId])
 }
