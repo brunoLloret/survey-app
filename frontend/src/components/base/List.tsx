@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useStore, StoreState } from "../../store/index";
-
+import Checkbox from "./Checkbox";
 // const { surveys, fetchSurveys, isLoading }: StoreState = useStore();
 
 // const List = () => {
@@ -57,6 +57,13 @@ const List = () => {
                 <div key={question.id}>
                   <p>{question.label}</p>
                   <p>{question.type}</p>
+
+                  {question.type === "checkbox" && (
+                    <Checkbox
+                      string={question.label}
+                      checkedStatus={question.checked || false}
+                    />
+                  )}
                 </div>
               ))}
             </div>
