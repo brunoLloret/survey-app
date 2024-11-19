@@ -51,6 +51,15 @@ const List = () => {
         surveys.map((survey) => (
           <div key={survey.id} className="p-4 border rounded">
             <p>{survey.title}</p>
+
+            <div>
+              {survey.questions.map((question) => (
+                <div key={question.id}>
+                  <p>{question.label}</p>
+                  <p>{question.type}</p>
+                </div>
+              ))}
+            </div>
           </div>
         ))
       ) : (
