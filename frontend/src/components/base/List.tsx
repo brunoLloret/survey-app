@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useStore, StoreState } from "../../store/index";
 import Checkbox from "./Checkbox";
+import OpenQuestion from "./OpenQuestion";
 // const { surveys, fetchSurveys, isLoading }: StoreState = useStore();
 
 // const List = () => {
@@ -62,6 +63,16 @@ const List = () => {
                     <Checkbox
                       string={question.label}
                       checkedStatus={question.checked || false}
+                    />
+                  )}
+
+                  {question.type === "open" && (
+                    <OpenQuestion
+                      question={question.label}
+                      answer={""}
+                      placeholder={"insert your answer here"}
+                      maxLength={20}
+                      //   onSave={answer}
                     />
                   )}
                 </div>
