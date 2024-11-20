@@ -40,6 +40,8 @@ export interface DropdownOption {
 }
 
 export interface MatrixQuestion {
+    id: number;
+    label: string;
     type: 'matrix';
     options: MatrixOption[] | MatrixQuestion;
     selectedOptionId: number | null;
