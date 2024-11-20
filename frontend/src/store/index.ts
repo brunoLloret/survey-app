@@ -1,21 +1,21 @@
 import { create } from 'zustand';
 import surveyAPI  from '../lib/services/users/service'
 import { Survey } from '../../../shared/shared'
-import {
-    BaseQuestion,
-    QuestionType,
-    Checkbox,
-    RadioButton,
-    RadioOption,
-    Dropdown,
-    DropdownOption,
-    MatrixQuestion,
-    MatrixOption,
-    OpenQuestion,
+// import {
+//     BaseQuestion,
+//     QuestionType,
+//     Checkbox,
+//     RadioButton,
+//     RadioOption,
+//     Dropdown,
+//     DropdownOption,
+//     MatrixQuestion,
+//     MatrixOption,
+//     OpenQuestion,
     
-    SurveyResponse,
-    QuestionResponse
-} from '../../../shared/shared'
+//     SurveyResponse,
+//     QuestionResponse
+// } from '../../../shared/shared'
 
 
 
@@ -24,38 +24,15 @@ export interface StoreState {
   isLoading: boolean;
   error: string | null;
   fetchSurveys: () => Promise<void>;
+  setSelectedRadioOption: (questionId: string, optionId: string) => void;
 }
 
 
-
-
-
-// Store using API service
-// const useStore = create((set) => ({
-//     surveys: [] as Survey[],
-//     survey: {} as Survey,
-//     isLoading: false,
-//     error: null,
-    
-//     // Use pre-defined API functions
-//     fetchSurveys: async () => {
-//         try {
-//             const data = await surveyAPI().getAllSurveys();
-//             set({ surveys: data, isLoading: false });
-//           } catch (err) {
-//             set({ error: err.message, isLoading: false });
-//           }
-//     },
-  
-//     fetchSurveyById: async (id)=> {
-// const data = await surveyAPI().getSurveyById(id)
-// set({survey: data})
-
-//     },
 export const useStore = create<StoreState>()((set) => ({
   surveys: [] as Survey[],
   isLoading: false,
   error: null,
+
   fetchSurveys: async () => {
     set({ isLoading: true });
     try {
@@ -64,7 +41,18 @@ export const useStore = create<StoreState>()((set) => ({
     } catch (error) {
       set({ error: error as string, isLoading: false });
     }
-  }
+  },
+
+  setSelectedRadioOption: (questionId: string, optionId: string) =>
+    set((state) => ({
+      surveys: state.surveys.map(survey => ({
+        ...survey,
+        questions: survey.questions.map(question =>
+          question.id === questionId
+          ? {...question, selectedOption: optionId} : question
+        )
+      }))
+    }))
 }));
   
 

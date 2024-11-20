@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useStore, StoreState } from "../../store/index";
 import Checkbox from "./Checkbox";
 import OpenQuestion from "./OpenQuestion";
+import Radio from "./RadioButton";
+
 // const { surveys, fetchSurveys, isLoading }: StoreState = useStore();
 
 // const List = () => {
@@ -32,7 +34,9 @@ const List = () => {
   const surveys = useStore((state: StoreState) => state.surveys);
   const fetchSurveys = useStore((state: StoreState) => state.fetchSurveys);
   const isLoading = useStore((state: StoreState) => state.isLoading);
-
+  const setSelectedRadioOption = useStore(
+    (state: StoreState) => state.setSelectedRadioOption
+  );
   useEffect(() => {
     const load = async () => {
       console.log("Fetching surveys...");
@@ -73,6 +77,17 @@ const List = () => {
                       placeholder={"insert your answer here"}
                       maxLength={20}
                       //   onSave={answer}
+                    />
+                  )}
+
+                  {question.type === "radio" && (
+                    <Radio
+                      label={question.label}
+                      options={question.options}
+                      selectedOptionId={question.selectedOptionId}
+                      onChange={(optionId) =>
+                        setSelectedRadioOption(question.id, optionId)
+                      }
                     />
                   )}
                 </div>
