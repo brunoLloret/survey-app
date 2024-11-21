@@ -52,8 +52,19 @@ export const useStore = create<StoreState>()((set) => ({
           ? {...question, selectedOption: optionId} : question
         )
       }))
-    }))
-}));
+    })),
+
+    setSelectedDropdownOption: (questionId: string, optionId: string) =>
+      set((state) => ({
+        surveys: state.surveys.map(survey => ({
+          ...survey,
+          questions: survey.questions.map(question =>
+            question.id === questionId
+            ? {...question, selectedOptio: optionId} : question
+          )}))
+        }))
+      }));
+
   
 
 // const useStore = create((set) => ({
