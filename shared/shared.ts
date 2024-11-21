@@ -29,6 +29,7 @@ export interface RadioOption {
 
 export interface Dropdown extends BaseQuestion {
     type: 'dropdown';
+    label: string;
     options: DropdownOption[];
     selectedOptionId: string | null;
 }

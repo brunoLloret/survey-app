@@ -3,6 +3,7 @@ import { useStore, StoreState } from "../../store/index";
 import Checkbox from "./Checkbox";
 import OpenQuestion from "./OpenQuestion";
 import Radio from "./RadioButton";
+import Dropdown from "./Dropdown";
 
 // const { surveys, fetchSurveys, isLoading }: StoreState = useStore();
 
@@ -37,6 +38,10 @@ const List = () => {
   const setSelectedRadioOption = useStore(
     (state: StoreState) => state.setSelectedRadioOption
   );
+  const setSelectedDropdownOption = useStore(
+    (state: StoreState) => state.setSelectedDropdownOption
+  );
+
   useEffect(() => {
     const load = async () => {
       console.log("Fetching surveys...");
@@ -88,6 +93,13 @@ const List = () => {
                       onChange={(optionId) =>
                         setSelectedRadioOption(question.id, optionId)
                       }
+                    />
+                  )}
+
+                  {question.type === "dropdown" && (
+                    <Dropdown
+                      options={question.options}
+                      selectedOptionId={question.selectedOptionId}
                     />
                   )}
                 </div>
