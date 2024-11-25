@@ -1,11 +1,10 @@
 
-
-
 export interface BaseQuestion {
     id: string;
     label: string;
     required: boolean;
     type: QuestionType;
+    orderIndex: number;
 }
 
 export type QuestionType = 'checkbox' | 'radio' | 'dropdown' | 'open' | 'matrix';
@@ -46,6 +45,7 @@ export interface MatrixQuestion {
     type: 'matrix';
     options: MatrixOption[] | MatrixQuestion;
     selectedOptionId: number | null;
+    orderIndex: number;
 }
 
 export interface MatrixOption {
@@ -62,10 +62,47 @@ export interface OpenQuestion extends BaseQuestion {
     maxLength?: number;
 }
 
-export interface Survey {
+
+export interface Section {
     id: string;
     title: string;
     questions: (OpenQuestion | Checkbox | RadioButton | Dropdown | MatrixQuestion)[];
+    status: SectionStatus;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export enum SectionStatus {
+    DRAFT = 'draft',
+    SUBMITTED = 'submitted',
+}
+
+//Response types
+
+export interface SectionResponse {
+    id: string;
+    sectionId: string;
+    status: SectionResponseStatus;
+    respondentId?: string;
+    submittedAt: Date | null;
+    answers: QuestionResponse[];
+}
+export enum SectionResponseStatus {
+    COMPLETE = 'complete',
+    PARTIAL = 'partial',
+    INVALID = 'invalid'
+}
+export type QuestionResponse = {
+    questionId: string;
+    value: string | boolean | string[] | null;
+}
+
+
+
+export interface Survey {
+    id: string;
+    title: string;
+    sections: Section[];
     status: SurveyStatus;
     createdAt: Date;
     updatedAt: Date;
@@ -75,26 +112,6 @@ export enum SurveyStatus {
     DRAFT = 'draft',
     PUBLISHED = 'published',
     CLOSED = 'closed',
-}
-
-//Response types
-
-export interface SurveyResponse {
-    id: string;
-    surveyId: string;
-    status: SurveyResponseStatus;
-    respondentId?: string;
-    submittedAt: Date | null;
-    answers: QuestionResponse[];
-}
-export enum SurveyResponseStatus {
-    COMPLETE = 'complete',
-    PARTIAL = 'partial',
-    INVALID = 'invalid'
-}
-export type QuestionResponse = {
-    questionId: string;
-    value: string | boolean | string[] | null;
 }
 
 
