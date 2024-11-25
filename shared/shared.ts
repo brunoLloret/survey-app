@@ -98,10 +98,10 @@ export type QuestionResponse = {
 }
 
 
-
 export interface Survey {
     id: string;
     title: string;
+    description: string;
     sections: Section[];
     status: SurveyStatus;
     createdAt: Date;
