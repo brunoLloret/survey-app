@@ -1,62 +1,35 @@
 
-// import express and Req, Res,
 import express, { Request, Response, NextFunction } from 'express';
-// 1) What is NextFunction?
-//NextFunction is a middleware function type in Express that passes control
-// to the next middleware function. It's commonly used for error handling and request processing.
-
-// 2) What is ParamsDictionary?
-//ParamsDictionary is a TypeScript interface for route parameters in Express,
-// defining them as a key-value pair of strings.
 import { ParamsDictionary } from 'express-serve-static-core';
-
-//3) What is CORS?
-// CORS (Cross-Origin Resource Sharing) is a security mechanism
-// that allows/restricts web resources to be requested from different domains.
 import cors from 'cors';
-
-//Import the Prisma Client, that allows us to interact with the ORM-prisma schema, an intermediate
-//layer between the database and the server
 import { PrismaClient } from '@prisma/client';
-
-//Import dotenv, file where variables that are used by the codebase but remain in secret or undisclosed
-//live
 import dotenv from 'dotenv';
 
-// 4) What is dotenv.config? How does it relate with the previous import?
 dotenv.config();
-
-// After importing prisma, we initialize a new PrismaClient
 const prisma = new PrismaClient();
-
-// we declare app as a var that is an express() server function. 5) What does this express() function entail?
 const app = express();
-
-//We declare a var port to keep it stable and avoid future typos errors
 const port = process.env.PORT || 3001;
 
 // Types
-
-//Type SurveyParams works with id because for now that is how we handle the Surveys, through
-//their ids. I wonder, 6) In case we include post methods for question editions, as well as other
-//CRUD operations, whether we would have to declare something like
-//QuestionParams
-
 interface SurveyParams extends ParamsDictionary {
 	id: string;
 }
+
 interface QuestionParams extends ParamsDictionary {
 	id: string;
 }
 
-// Error handler types
+// New interface for section params
+interface SectionParams extends ParamsDictionary {
+	id: string;
+}
+
 type AsyncRequestHandler<P = ParamsDictionary> = (
 	req: Request<P>,
 	res: Response,
 	next: NextFunction
 ) => Promise<any>;
 
-// Error handler wrapper
 const asyncHandler = <P = ParamsDictionary>(fn: AsyncRequestHandler<P>) => (
 	req: Request<P>,
 	res: Response,
@@ -65,43 +38,26 @@ const asyncHandler = <P = ParamsDictionary>(fn: AsyncRequestHandler<P>) => (
 	return Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-
 // Middleware
-
-//app defines a use of json() format for the express server
 app.use(express.json());
-
-//app declares the use of cors
 app.use(cors());
 
 // Basic routes
-
-// 7) Why _ instead of req?
-//Because the request is open, as defined by the path /
-//and synchronized with the frontend API
-//The response is a message that says that the server is running
 app.get('/', (_: Request, res: Response) => {
 	res.json({ message: 'Survey API is running' });
 });
 
 // Survey routes
-
-//Same here, we do not request anything, so it is a _ instead of a req,
-// 8) what does the asyncHandler manages instead of just async?
-// we declare the app. METHOD (path, (req, res cyle) => {
-// handling logic for the content requested,
-//in this case, we declare var surveys, we do an await prisma.element.method({handling})
-//in this case, it is a findMany, this is, find every element inside survey entity
-//that include questions, options true. //i.e. get them all (there are no restrictions at any level)
-
-// response in json format with the content requested
-// })
 app.get('/surveys', asyncHandler(async (_: Request, res: Response) => {
 	const surveys = await prisma.survey.findMany({
 		include: {
-			questions: {
+			sections: {
 				include: {
-					options: true
+					questions: {
+						include: {
+							options: true
+						}
+					}
 				}
 			}
 		}
@@ -109,19 +65,18 @@ app.get('/surveys', asyncHandler(async (_: Request, res: Response) => {
 	res.json(surveys);
 }));
 
-//9) In this case, everything remains the same but now:
-// app.Method is get, path is with specific Id, the async handler inside inclusde an async
-//before req,res
-// method findUnique
-//where: id: equals required params id
-//that includes everything else
+// Get survey by ID
 app.get('/surveys/:id', asyncHandler<SurveyParams>(async (req, res) => {
 	const survey = await prisma.survey.findUnique({
 		where: { id: req.params.id },
 		include: {
-			questions: {
+			sections: {
 				include: {
-					options: true
+					questions: {
+						include: {
+							options: true
+						}
+					}
 				}
 			}
 		}
@@ -134,28 +89,63 @@ app.get('/surveys/:id', asyncHandler<SurveyParams>(async (req, res) => {
 	res.json(survey);
 }));
 
-//10) here, the post method is actually the same to the get. So the transformation
-//happens somewhere else, not here.
-//Here, we declare how through a specific path there will be a specific
-//cycle/dynamic of request and response: we are I. requesting a unique survey
-//the way we ensure this exists is through where: id: req.params.id
-//and we include everything from that survey
+// Create new survey
+app.post('/surveys', asyncHandler(async (req, res) => {
+	const { title, description, sections } = req.body;
 
-//11) What if we would want to get only a specific part? Give me the code if, let's say
-//I would want to request only the title, or only the questions
+	const newSurvey = await prisma.survey.create({
+		data: {
+			title,
+			description,
+			status: 'draft',
+			sections: {
+				create: sections.map((section: any, index: number) => ({
+					title: section.title,
+					orderIndex: index,
+					questions: {
+						create: section.questions.map((question: any, qIndex: number) => ({
+							label: question.label,
+							required: question.required,
+							type: question.type,
+							orderIndex: qIndex,
+							question: question.question,
+							placeholder: question.placeholder,
+							maxLength: question.maxLength,
+							checked: question.checked,
+							options: question.options ? {
+								create: question.options.map((option: any) => ({
+									label: option.label,
+									value: option.value || option.label
+								}))
+							} : undefined
+						}))
+					}
+				}))
+			}
+		},
+		include: {
+			sections: {
+				include: {
+					questions: {
+						include: {
+							options: true
+						}
+					}
+				}
+			}
+		}
+	});
 
-//Then, the response is basically the survey in json again. In this way, we ensure
-//a dialogue between database and backend front API to be connected with the frontend
+	res.json(newSurvey);
+}));
 
-app.post('/surveys/:id', asyncHandler<SurveyParams>(async (req, res) => {
+// Example of getting specific fields (answering question 11)
+app.get('/surveys/:id/title', asyncHandler<SurveyParams>(async (req, res) => {
 	const survey = await prisma.survey.findUnique({
 		where: { id: req.params.id },
-		include: {
-			questions: {
-				include: {
-					options: true
-				}
-			}
+		select: {
+			title: true,
+			description: true
 		}
 	});
 
@@ -166,6 +156,28 @@ app.post('/surveys/:id', asyncHandler<SurveyParams>(async (req, res) => {
 	res.json(survey);
 }));
 
+// Get questions from a specific section
+app.get('/surveys/:surveyId/sections/:sectionId/questions',
+	asyncHandler(async (req, res) => {
+		const questions = await prisma.question.findMany({
+			where: {
+				section: {
+					id: req.params.sectionId,
+					surveyId: req.params.surveyId
+				}
+			},
+			include: {
+				options: true
+			}
+		});
+
+		if (!questions.length) {
+			return res.status(404).json({ error: 'No questions found' });
+		}
+
+		res.json(questions);
+	})
+);
 
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
