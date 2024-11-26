@@ -1,0 +1,81 @@
+getAll surveys  	 /surveys
+getAll drafts        /surveys/drafts
+
+getSurveyById 	/surveys/:id
+getSectionById /surveys/:id/section/:id
+getDraftById /surveys/:id/draft/:id
+
+///
+//this means that we will get all the responses associated to a survey id
+getSurveyResults /surveys/:id/responses/all
+
+statistics in general are pendant
+
+///
+
+
+getSurvey       /surveys/
+
+create survey
+    createSurvey post - /surveys/new
+
+answer survey
+    answerSurvey post - /surveys/:id
+
+
+edit survey
+    editSurvey post - /surveys/:id
+    editSection post - /surveys/:id/section/:id 
+    editQuestion post - /surveys/:id/section/:id/question/:id
+    
+submit survey 
+    /surveys/:id/
+
+
+save draft survey
+    saveDraftSurvey -> post /surveys/:id
+    it is the same path, same action,
+    it depends on an if: if isPublished, then it's not a draft
+
+getAllDrafts    /surveys/drafts
+getDraftById /surveys/draft/:id
+
+2 Here I think the survey/draft path is clearer but perhaps
+unnecesary. Do paths reflect always data dependency or do
+I have to just declare a path as a namespace?
+
+getAllResponsesOfASurvey / surveys/responses
+getResponsesOfAQuestion  / surveys/:id/question/:id
+
+
+CREATE
+
+POST /surveys                     # Create new survey
+POST /surveys/:id/sections        # Add section
+POST /surveys/:id/responses       # Submit response
+POST /surveys/:id/duplicate       # Duplicate survey
+
+READ
+
+GET /surveys                      # List all surveys
+GET /surveys/drafts              # List all drafts
+GET /surveys/:id                 # Get survey details
+GET /surveys/:id/sections        # Get all sections
+GET /surveys/:id/sections/:sid   # Get section details
+GET /surveys/:id/responses       # Get all responses
+GET /surveys/:id/responses/:rid  # Get specific response
+GET /surveys/:id/statistics      # Get survey statistics
+GET /surveys/:id/sections/:sid/statistics  # Get section statistics
+
+UPDATED
+
+PATCH /surveys/:id               # Update survey details
+PATCH /surveys/:id/sections/:sid # Update section
+PATCH /surveys/:id/publish       # Publish survey
+PATCH /surveys/:id/unpublish     # Unpublish/draft survey
+
+DELETE 
+
+DELETE /surveys/:id              # Delete survey
+DELETE /surveys/:id/sections/:sid # Delete section
+DELETE /surveys/drafts/:id       # Delete draft

@@ -1,0 +1,5 @@
+1/ redefine the prisma schema based on the changes on the types/interfaces
+2/ write the backend express CRUD operations
+3/ write the same operations for the API frontend 
+4/ write the same operations for the store
+5/ work in the frontend UI

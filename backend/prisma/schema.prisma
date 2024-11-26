@@ -22,7 +22,7 @@
 
 // User -> Create a survey
   // Survey -> Questions
-  // Questions -> Questions | Answers
+    // Questions -> Questions | Answers
 
 // User -> Answer a survey
 // User -> Modify a survey
@@ -74,7 +74,6 @@
 // How to handle survey deletion with existing responses
 // Question modification impact on existing answers
 
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -84,36 +83,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum QuestionType {
-  checkbox
-  radio
-  dropdown
-  open
-  matrix
-}
-
-enum SurveyStatus {
-  draft
-  published
-  closed
-}
-
-enum SurveyResponseStatus {
-  complete
-  partial
-  invalid
-}
-
 model Survey {
-  id        String      @id @default(uuid())
-  title     String
-  status    SurveyStatus @default(draft)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  questions Question[]
-  responses SurveyResponse[]
+  id          String           @id @default(uuid())
+  title       String
+  description String?
+  status      SurveyStatus    @default(draft)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  sections    Section[]       // One-to-many relationship with sections
+  responses   SurveyResponse[]
 
   @@map("survey")
+}
+
+model Section {
+  id          String    @id @default(uuid())
+  title       String
+  orderIndex  Int       // To maintain section order within a survey
+  survey      Survey    @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  surveyId    String
+  questions   Question[] // One-to-many relationship with questions
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@map("section")
+  @@index([surveyId])
 }
 
 model Question {
@@ -121,9 +115,9 @@ model Question {
   label       String
   required    Boolean      @default(false)
   type        QuestionType
-  survey      Survey       @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  surveyId    String
-  orderIndex  Int         
+  section     Section      @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sectionId   String
+  orderIndex  Int         // To maintain question order within a section
   question    String?     
   placeholder String?     
   maxLength   Int?        
@@ -132,7 +126,7 @@ model Question {
   responses   QuestionResponse[]
 
   @@map("question")
-  @@index([surveyId])
+  @@index([sectionId])
 }
 
 model Option {
@@ -170,9 +164,29 @@ model QuestionResponse {
   questionId       String
   textValue       String?         
   booleanValue    Boolean?        
-  selectedOptions  Option[]       @relation("OptionResponses")
+  selectedOptions  Option[]        @relation("OptionResponses")
 
   @@map("question_response")
   @@index([questionId])
   @@index([surveyResponseId])
+}
+
+enum QuestionType {
+  checkbox
+  radio
+  dropdown
+  open
+  matrix
+}
+
+enum SurveyStatus {
+  draft
+  published
+  closed
+}
+
+enum SurveyResponseStatus {
+  complete
+  partial
+  invalid
 }

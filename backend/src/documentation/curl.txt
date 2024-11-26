@@ -1,0 +1,83 @@
+# Test server is running
+curl http://localhost:3001/
+
+# Get all surveys
+curl http://localhost:3001/surveys
+
+# Get specific survey by ID
+curl http://localhost:3001/surveys/survey-1
+
+# Get only title and description of a specific survey
+curl http://localhost:3001/surveys/survey-1/title
+
+# Get questions from a specific section
+curl http://localhost:3001/surveys/survey-1/sections/section-1-s1/questions
+
+# Create a new survey
+curl -X POST http://localhost:3001/surveys \
+-H "Content-Type: application/json" \
+-d '{
+  "title": "New Test Survey",
+  "description": "Testing survey creation",
+  "sections": [
+    {
+      "title": "First Section",
+      "questions": [
+        {
+          "label": "Test Question 1",
+          "type": "open",
+          "required": true,
+          "question": "Please answer this question",
+          "placeholder": "Your answer here",
+          "maxLength": 500
+        },
+        {
+          "label": "Test Question 2",
+          "type": "radio",
+          "required": true,
+          "options": [
+            {
+              "label": "Option 1",
+              "value": "opt1"
+            },
+            {
+              "label": "Option 2",
+              "value": "opt2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Second Section",
+      "questions": [
+        {
+          "label": "Test Question 3",
+          "type": "checkbox",
+          "required": false,
+          "checked": false
+        }
+      ]
+    }
+  ]
+}'
+
+# Example with an existing survey response
+curl -X POST http://localhost:3001/surveys/survey-1 \
+-H "Content-Type: application/json" \
+-d '{
+  "answers": [
+    {
+      "questionId": "q1-s1",
+      "value": "Found through social media"
+    },
+    {
+      "questionId": "q2-s1",
+      "value": "opt1-q2-s1"
+    },
+    {
+      "questionId": "q3-s1",
+      "value": true
+    }
+  ]
+}'
