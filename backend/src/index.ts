@@ -38,6 +38,35 @@ const asyncHandler = <P = ParamsDictionary>(fn: AsyncRequestHandler<P>) => (
 	return Promise.resolve(fn(req, res, next)).catch(next);
 };
 
+interface Answer {
+	questionId: string;
+	textValue?: string;
+	booleanValue?: boolean;
+	selectedOptionIds?: string[];
+}
+
+interface Option {
+	id?: string;
+	label: string;
+	value?: string;
+}
+
+interface Question {
+	id?: string;
+	label: string;
+	type: string;
+	required: boolean;
+	orderIndex: number;
+	options?: Option[];
+}
+
+interface Section {
+	id?: string;
+	title: string;
+	orderIndex: number;
+	questions?: Question[];
+}
+
 // Middleware
 app.use(express.json());
 app.use(cors());
@@ -240,14 +269,14 @@ app.post('/surveys/:id/responses', asyncHandler(async (req, res) => {
 				}
 			},
 			answers: {
-				create: req.body.answers.map(answer => ({
+				create: req.body.answers.map((answer: Answer) => ({
 					question: {
 						connect: { id: answer.questionId }
 					},
 					textValue: answer.textValue,
 					booleanValue: answer.booleanValue,
 					selectedOptions: answer.selectedOptionIds ? {
-						connect: answer.selectedOptionIds.map(id => ({ id }))
+						connect: answer.selectedOptionIds.map((id: string) => ({ id }))
 					} : undefined
 				}))
 			}
@@ -403,19 +432,19 @@ app.patch('/surveys/:id', asyncHandler(async (req, res) => {
 		data: {
 			...req.body,
 			sections: {
-				upsert: req.body.sections?.map(section => ({
+				upsert: req.body.sections?.map((section: Section) => ({
 					where: { id: section.id || 'new' },
 					create: {
 						title: section.title,
 						orderIndex: section.orderIndex,
 						questions: {
-							create: section.questions?.map(question => ({
+							create: section.questions?.map((question: Question) => ({
 								label: question.label,
 								type: question.type,
 								required: question.required,
 								orderIndex: question.orderIndex,
 								options: {
-									create: question.options?.map(option => ({
+									create: question.options?.map((option: Option) => ({
 										label: option.label,
 										value: option.value
 									}))
@@ -427,7 +456,7 @@ app.patch('/surveys/:id', asyncHandler(async (req, res) => {
 						title: section.title,
 						orderIndex: section.orderIndex,
 						questions: {
-							upsert: section.questions?.map(question => ({
+							upsert: section.questions?.map((question: Question) => ({
 								where: { id: question.id || 'new' },
 								create: {
 									label: question.label,
@@ -435,7 +464,7 @@ app.patch('/surveys/:id', asyncHandler(async (req, res) => {
 									required: question.required,
 									orderIndex: question.orderIndex,
 									options: {
-										create: question.options?.map(option => ({
+										create: question.options?.map((option: Option) => ({
 											label: option.label,
 											value: option.value
 										}))
@@ -447,7 +476,7 @@ app.patch('/surveys/:id', asyncHandler(async (req, res) => {
 									required: question.required,
 									orderIndex: question.orderIndex,
 									options: {
-										upsert: question.options?.map(option => ({
+										upsert: question.options?.map((option: Option) => ({
 											where: { id: option.id || 'new' },
 											create: {
 												label: option.label,
@@ -596,7 +625,7 @@ app.patch('/surveys/:surveyId/sections/:sectionId', asyncHandler(async (req, res
 		data: {
 			...req.body,
 			questions: req.body.questions ? {
-				upsert: req.body.questions.map(q => ({
+				upsert: req.body.questions.map((q: Question) => ({
 					where: { id: q.id || 'new' },
 					create: {
 						label: q.label,
@@ -604,7 +633,7 @@ app.patch('/surveys/:surveyId/sections/:sectionId', asyncHandler(async (req, res
 						required: q.required,
 						orderIndex: q.orderIndex,
 						options: q.options ? {
-							create: q.options.map(opt => ({
+							create: q.options.map((opt: Option) => ({
 								label: opt.label,
 								value: opt.value
 							}))
