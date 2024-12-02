@@ -1,83 +1,123 @@
-# Test server is running
-curl http://localhost:3001/
+# CREATE
+# New survey
+curl -X POST "http://localhost:3001/surveys" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Test Survey",
+    "description": "Test Description",
+    "sections": [{
+      "title": "Section 1",
+      "questions": [{
+        "label": "Question 1",
+        "type": "radio",
+        "required": true,
+        "question": "What is your choice?",
+        "options": [
+          {"label": "Option 1"},
+          {"label": "Option 2"}
+        ]
+      }]
+    }]
+  }'
 
-# Get all surveys
-curl http://localhost:3001/surveys
+# Add section
+curl -X POST "http://localhost:3001/surveys/{id}/sections" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "New Section",
+    "orderIndex": 1
+  }'
 
-# Get specific survey by ID
-curl http://localhost:3001/surveys/survey-1
+# Submit response
+curl -X POST "http://localhost:3001/surveys/{id}/responses" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "complete",
+    "answers": [{
+      "questionId": "{questionId}",
+      "textValue": "Answer text",
+      "selectedOptionIds": ["{optionId}"]
+    }]
+  }'
 
-# Get only title and description of a specific survey
-curl http://localhost:3001/surveys/survey-1/title
+# Add option
+curl -X POST "http://localhost:3001/questions/{id}/options" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "label": "New Option",
+    "value": "option_value"
+  }'
 
-# Get questions from a specific section
-curl http://localhost:3001/surveys/survey-1/sections/section-1-s1/questions
+# Duplicate survey
+curl -X POST "http://localhost:3001/surveys/{id}/duplicate"
 
-# Create a new survey
-curl -X POST http://localhost:3001/surveys \
--H "Content-Type: application/json" \
--d '{
-  "title": "New Test Survey",
-  "description": "Testing survey creation",
-  "sections": [
-    {
-      "title": "First Section",
-      "questions": [
-        {
-          "label": "Test Question 1",
-          "type": "open",
-          "required": true,
-          "question": "Please answer this question",
-          "placeholder": "Your answer here",
-          "maxLength": 500
-        },
-        {
-          "label": "Test Question 2",
-          "type": "radio",
-          "required": true,
-          "options": [
-            {
-              "label": "Option 1",
-              "value": "opt1"
-            },
-            {
-              "label": "Option 2",
-              "value": "opt2"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Second Section",
-      "questions": [
-        {
-          "label": "Test Question 3",
-          "type": "checkbox",
-          "required": false,
-          "checked": false
-        }
-      ]
-    }
-  ]
-}'
+# READ
+# List all surveys
+curl -X GET "http://localhost:3001/surveys"
 
-# Example with an existing survey response
-curl -X POST http://localhost:3001/surveys/survey-1 \
--H "Content-Type: application/json" \
--d '{
-  "answers": [
-    {
-      "questionId": "q1-s1",
-      "value": "Found through social media"
-    },
-    {
-      "questionId": "q2-s1",
-      "value": "opt1-q2-s1"
-    },
-    {
-      "questionId": "q3-s1",
-      "value": true
-    }
-  ]
-}'
+# List drafts
+curl -X GET "http://localhost:3001/surveys/drafts"
+
+# Get survey details
+curl -X GET "http://localhost:3001/surveys/{id}"
+
+# Get all sections
+curl -X GET "http://localhost:3001/surveys/{id}/sections"
+
+# Get section details
+curl -X GET "http://localhost:3001/surveys/{surveyId}/sections/{sectionId}"
+
+# Get survey statistics
+curl -X GET "http://localhost:3001/surveys/{id}/statistics"
+
+# Get section statistics
+curl -X GET "http://localhost:3001/surveys/{surveyId}/sections/{sectionId}/statistics"
+
+# UPDATE
+# Update survey
+curl -X PATCH "http://localhost:3001/surveys/{id}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Updated Title",
+    "sections": [{
+      "id": "{sectionId}",
+      "title": "Updated Section",
+      "questions": [{
+        "id": "{questionId}",
+        "label": "Updated Question"
+      }]
+    }]
+  }'
+
+# Update section
+curl -X PATCH "http://localhost:3001/surveys/{surveyId}/sections/{sectionId}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Updated Section Title"
+  }'
+
+# Publish survey
+curl -X PATCH "http://localhost:3001/surveys/{id}/publish"
+
+# Unpublish survey
+curl -X PATCH "http://localhost:3001/surveys/{id}/unpublish"
+
+# Update option
+curl -X PATCH "http://localhost:3001/options/{id}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "label": "Updated Option"
+  }'
+
+# DELETE
+# Delete survey
+curl -X DELETE "http://localhost:3001/surveys/{id}"
+
+# Delete section
+curl -X DELETE "http://localhost:3001/surveys/{surveyId}/sections/{sectionId}"
+
+# Delete draft
+curl -X DELETE "http://localhost:3001/surveys/drafts/{id}"
+
+# Delete option
+curl -X DELETE "http://localhost:3001/options/{id}"
